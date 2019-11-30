@@ -1,22 +1,25 @@
-const mongodb = require('mongodb')
+//Use destructuring to get methods of the Mongo object
 
-//Initialize connection gives access to function necessary to create CRUD operations
-const MongoClient = mongodb.MongoClient;
+const { MongoClient, ObjectID } = require('mongodb');
 
 
 const connectionURL = 'mongodb://127.0.0.1:27017';
 const databaseName = 'task-manager';
 
-MongoClient.connect(connectionURL, {useNewUrlParser: true}, (error, client) => {
-    if(error){
+//We get a unique ID from Object ID
+const id = new ObjectID()
+
+MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+    if (error) {
         return console.log("Unable to connect to Database")
     }
 
     //Gets refernce to the specific db to manipulate
     const db = client.db(databaseName)
 
-    db.collection('users').insertOne({
-        name: 'Cesar',
-        age: '29'
+    db.collection('users').find({ name: "Cesar" }).toArray((Array, users) => {
+        console.log(users);
     })
+
+
 })
