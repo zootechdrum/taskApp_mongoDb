@@ -11,20 +11,24 @@ const port = process.env.PORT || 3000;
 //parses incoming json converts it into an object
 app.use(express.json())
 
-app.post('/users', (req, res) => {
+app.post('/users', async (req, res) => {
     const user = new User(req.body)
-    user.save().then(() => {
+
+    try {
+        await user.save()
         res.status(201).send(user)
-    }).catch((e) => {
-        res.status(400).send(e)
-    })
+    } catch (e) {
+        res.status(404).send(e)
+    }
 });
 
 app.get('/users', (req, res) => {
-    User.find({}).then((users) => {
+    try {
+        const users = await User.find({})
         res.send(users)
-    }).catch(() => {
-    })
+    } catch (e) {
+        res.status(500)
+    }
 })
 
 app.get('/users/:id', (req, res) => {
