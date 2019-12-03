@@ -25,56 +25,70 @@ app.post('/users', async (req, res) => {
 app.get('/users', (req, res) => {
     try {
         const users = await User.find({})
-        res.send(users)
+        if (!user) {
+            return res.status(404).send()
+        }
+        //sends user info if it was successful
+        res.send(user);
     } catch (e) {
         res.status(500)
     }
 })
 
-app.get('/users/:id', (req, res) => {
+app.get('/users/:id', async (req, res) => {
     const _id = req.params.id;
 
-    User.findById(_id).then((user) => {
-        if (!user) {
+    try {
+        const user = await User.findById(_id)
+    } catch(e) {
+        console.log(e)
+    }
+})
+
+app.get('/task', async (req, res) => {
+
+    try {
+        const  tasks = await Task.find({})
+        if(!tasks) {
             return res.status(404).send()
         }
-
-        res.send(user)
-    }).catch((e) => {
-        res.status(500).send()
-    });
-})
-
-app.get('/task', (req, res) => {
-    Task.find({}).then((tasks) => {
         res.send(tasks)
-    }).catch((e) => {
-        res.status(400).send(e)
-    })
+    } catch(e) {
+        console.log(e)
+    }
 })
 
-app.get('/task/:id', (req, res) => {
+app.get('/task/:id', async (req, res) => {
     const task_id = req.params.id
 
-    Task.findById(task_id).then((task) => {
-        if (!task) {
-            return res.status(404).send()
-        }
-        res.send(task)
-    }).catch((e) => {
-        res.status(500).send()
-    })
+    try {
+        const task = await Task.findById(task_id)
+    } catch(e) {
+        console.log(e)
+    }
 })
 
-app.post('/task', (req, res) => {
+app.post('/task', async (req, res) => {
     const task = new Task(req.body)
-    task.save().then(() => {
-        res.status(201).send(task)
-    }).catch((e) => {
-        res.status(400).send(e)
-    })
+
+    try {
+        await task.save()
+        res.status(201).send(user)
+    } catch(e) {
+        res.status(404).send(e)
+    }
 });
 
+// app.post('/users', async (req, res) => {
+//     const user = new User(req.body)
+
+//     try {
+//         await user.save()
+//         res.status(201).send(user)
+//     } catch (e) {
+//         res.status(404).send(e)
+//     }
+// });
 
 
 app.listen(port, () => {
