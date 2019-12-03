@@ -22,14 +22,15 @@ app.post('/users', async (req, res) => {
     }
 });
 
-app.get('/users', (req, res) => {
+app.get('/users', async (req, res) => {
     try {
         const users = await User.find({})
-        if (!user) {
+        if (!users) {
             return res.status(404).send()
         }
         //sends user info if it was successful
-        res.send(user);
+        console.log("hek")
+        res.send(users);
     } catch (e) {
         res.status(500)
     }
@@ -45,7 +46,7 @@ app.get('/users/:id', async (req, res) => {
     }
 })
 
-app.patch('/users/id', async (req, res) => {
+app.patch('/users/:id', async (req, res) => {
     try {
         const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true , runValidators: true})
         if (!user) {
