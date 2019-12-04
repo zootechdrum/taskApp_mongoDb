@@ -96,11 +96,35 @@ app.post('/task', async (req, res) => {
 
     try {
         await task.save()
-        res.status(201).send(user)
+        res.status(201).send(task)
     } catch(e) {
         res.status(404).send(e)
     }
 });
+
+app.patch('/task/:id', async (req, res) => {
+    //makes sure we are only upating properties in our user model.
+
+    const update = Object.keys(req.body)
+    const allowedUpdates = ["description", "completed"]
+    const isValidOperation = update.every((update) => allowedUpdates.includes(update))
+
+    if(!isValidOperation) {
+        return res.status(400)({error: "invalid updates"})
+    }
+
+    try {
+        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true , runValidators: true})
+        console.log(task)
+        if (!task) {
+            console.log("")
+            return res.status(404).send()
+        }
+        res.send(task)
+    } catch (e) {
+        res.status(404).send({error: e})
+    }
+})
 
 app.listen(port, () => {
     console.log("Server is up and running on port" + port)
